@@ -1,1 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Limit Reached</title>
 
+    <!-- App Favicon -->
+    <link rel="icon" type="image/png" href="./IMG_6674.png">
+    <link rel="apple-touch-icon" href="./IMG_6674.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cashGreen: '#00D632',
+                        ppNavy: '#003087',
+                        ppBlue: '#0070BA',
+                        venmoBlue: '#008CFF',
+                        venmoDark: '#0074D9',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Strict Fullscreen App Engine - Zero Scrollbars & Native Touch */
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+        }
+
+        /* Dynamic Theme Tokens */
+        body.theme-cashapp {
+            background-color: #000000;
+            color: #FFFFFF;
+            --brand-color: #00D632;
+            --brand-hover: #00B328;
+            --btn-text: #000000;
+            --accent-glow: rgba(0, 214, 50, 0.25);
+            --subtext-color: #94A3B8;
+            --icon-bg: rgba(255, 255, 255, 0.07);
+            --heading-color: #FFFFFF;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --brand-footer-text: #00D632;
+        }
+
+        body.theme-paypal {
+            background-color: #FFFFFF;
+            color: #0C2340;
+            --brand-color: #0070BA;
+            --brand-hover: #005EA6;
+            --btn-text: #FFFFFF;
+            --accent-glow: rgba(0, 112, 186, 0.2);
+            --subtext-color: #6C7378;
+            --icon-bg: rgba(0, 48, 135, 0.06);
+            --heading-color: #0C2340;
+            --border-color: #E5E7EB;
+            --brand-footer-text: #003087;
+        }
+
+        body.theme-venmo {
+            background-color: #FFFFFF;
+            color: #14171A;
+            --brand-color: #008CFF;
+            --brand-hover: #0074D9;
+            --btn-text: #FFFFFF;
+            --accent-glow: rgba(0, 140, 255, 0.2);
+            --subtext-color: #657786;
+            --icon-bg: rgba(0, 140, 255, 0.06);
+            --heading-color: #14171A;
+            --border-color: #E1E8ED;
+            --brand-footer-text: #008CFF;
+        }
+
+        .bg-brand-btn { 
+            background-color: var(--brand-color); 
+            color: var(--btn-text);
+        }
+        .bg-brand-btn:active { 
+            background-color: var(--brand-hover); 
+        }
+        .text-brand-sub { color: var(--subtext-color); }
+        .text-heading { color: var(--heading-color); }
+        .bg-icon-soft { background-color: var(--icon-bg); }
+        .border-dynamic { border-color: var(--border-color); }
+
+        /* Smooth UI Transitions */
+        .theme-smooth {
+            transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+        }
+
+        /* Subtle Pulse for Limit Alert Icon */
+        @keyframes pulseAlert {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.06); opacity: 0.85; }
+        }
+        .animate-pulse-alert {
+            animation: pulseAlert 2.2s infinite ease-in-out;
+        }
+
+        /* Pop-in Overlay Animation */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in {
+            animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="theme-cashapp theme-smooth flex flex-col justify-between items-center h-full w-full p-6 sm:p-8 selection:bg-none">
+
+    <!-- TOP CONTROL BAR -->
+    <header class="w-full flex items-center justify-between pt-2 z-30">
+        
+        <!-- Subtle Top-Left Brand Switcher Trigger -->
+        <div class="relative">
+            <button onclick="toggleBrandDropdown(event)" 
+                    id="brandTriggerBtn"
+                    class="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-base bg-black/10 dark:bg-white/10 text-current transition-all active:scale-90 border border-dynamic shadow-sm">
+                C
+            </button>
+
+            <!-- Hidden Brand Selector Dropdown -->
+            <div id="brandDropdown" class="hidden absolute top-12 left-0 w-48 bg-slate-900/95 border border-white/15 rounded-2xl p-1.5 shadow-2xl backdrop-blur-xl z-50 animate-pop-in text-white">
+                <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 py-1.5">Switch App View</div>
+                <button onclick="selectBrand('cashapp')" id="opt-cashapp" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-extrabold bg-cashGreen/20 text-cashGreen transition-all">
+                    <span>Cash App</span>
+                    <i class="fa-solid fa-check text-xs"></i>
+                </button>
+                <button onclick="selectBrand('paypal')" id="opt-paypal" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-extrabold text-slate-300 hover:bg-white/10 transition-all">
+                    <span>PayPal</span>
+                    <i class="fa-solid fa-check text-xs hidden"></i>
+                </button>
+                <button onclick="selectBrand('venmo')" id="opt-venmo" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-extrabold text-slate-300 hover:bg-white/10 transition-all">
+                    <span>Venmo</span>
+                    <i class="fa-solid fa-check text-xs hidden"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Top Right Close Button -->
+        <button onclick="dismissScreen()" class="w-10 h-10 rounded-full bg-black/10 dark:bg-white/10 text-current flex items-center justify-center text-lg transition-all active:scale-90 border border-dynamic">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </header>
+
+    <!-- CENTER CONTENT (Native App Limit Alert Layout) -->
+    <main class="w-full max-w-sm flex flex-col items-center text-center my-auto px-4 z-10 animate-pop-in">
+        
+        <!-- Recipient Profile Header -->
+        <div class="relative mb-4">
+            <img src="./IMG_6659.jpeg" 
+                 alt="Tora Bliss Profile" 
+                 class="w-20 h-20 sm:w-22 sm:h-22 rounded-full object-cover border-2 border-dynamic shadow-xl">
+            <div class="absolute -bottom-1 -right-1 bg-white p-0.5 rounded-full shadow">
+                <div id="verifiedBadge" class="w-6 h-6 bg-cashGreen text-black rounded-full flex items-center justify-center text-xs font-black shadow-sm">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Name & Handle -->
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-heading mb-0.5">Tora Bliss</h1>
+        <p id="userHandle" class="text-xs sm:text-sm font-semibold text-brand-sub mb-6">$torabliss</p>
+
+        <!-- Limit Alert Icon -->
+        <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-icon-soft flex items-center justify-center text-amber-500 text-3xl mb-5 shadow-lg animate-pulse-alert border border-dynamic">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <!-- Alert Headline -->
+        <h2 class="text-xl sm:text-2xl font-black tracking-tight text-heading mb-3">
+            Weekly Send Limit Reached
+        </h2>
+
+        <!-- Crisp Alert Body Text -->
+        <p class="text-sm sm:text-base font-medium leading-relaxed text-brand-sub max-w-[290px]">
+            You have reached your send limit for this week. You can start sending payments again next week.
+        </p>
+
+    </main>
+
+    <!-- FOOTER ACTION BUTTON & BRAND ATTRIBUTION -->
+    <footer class="w-full max-w-sm pb-4 sm:pb-6 z-20 flex flex-col items-center gap-4">
+        <button onclick="dismissScreen()" 
+                id="closeButton"
+                class="w-full bg-brand-btn font-extrabold text-base py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] select-none cursor-pointer">
+            <span>Close</span>
+        </button>
+
+        <!-- Dynamic Brand Security Footer Identification -->
+        <div class="flex items-center gap-1.5 text-xs font-bold text-brand-sub opacity-90">
+            <i class="fa-solid fa-shield-halved text-brand-sub"></i>
+            <span id="brandSecurityFooter">Cash App INC</span>
+        </div>
+    </footer>
+
+    <!-- Application Controller Script -->
+    <script>
+        const appPresets = {
+            cashapp: {
+                triggerLabel: 'C',
+                handle: 'torabliss',
+                bodyClass: 'theme-cashapp',
+                badgeBg: '#00D632',
+                badgeText: '#000000',
+                footerText: 'Cash App INC'
+            },
+            paypal: {
+                triggerLabel: 'P',
+                handle: 'PayPal • Tora Bliss',
+                bodyClass: 'theme-paypal',
+                badgeBg: '#0070BA',
+                badgeText: '#FFFFFF',
+                footerText: 'PayPal INC'
+            },
+            venmo: {
+                triggerLabel: 'V',
+                handle: 'torabliss',
+                bodyClass: 'theme-venmo',
+                badgeBg: '#008CFF',
+                badgeText: '#FFFFFF',
+                footerText: 'Venmo INC'
+            }
+        };
+
+        let currentApp = 'cashapp';
+
+        // Toggle Hidden Brand Dropdown
+        function toggleBrandDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('brandDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Apply App Switcher Selection
+        function selectBrand(brandKey) {
+            const config = appPresets[brandKey];
+            if (!config) return;
+
+            currentApp = brandKey;
+            document.body.className = `${config.bodyClass} theme-smooth flex flex-col justify-between items-center h-full w-full p-6 sm:p-8 selection:bg-none`;
+
+            document.getElementById('brandTriggerBtn').innerText = config.triggerLabel;
+            document.getElementById('userHandle').innerText = config.handle;
+            document.getElementById('brandSecurityFooter').innerText = config.footerText;
+
+            const badge = document.getElementById('verifiedBadge');
+            badge.style.backgroundColor = config.badgeBg;
+            badge.style.color = config.badgeText;
+
+            // Update Menu Checks
+            ['cashapp', 'paypal', 'venmo'].forEach(key => {
+                const opt = document.getElementById(`opt-${key}`);
+                const icon = opt.querySelector('i');
+                if (key === brandKey) {
+                    opt.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-extrabold bg-white/20 text-white transition-all";
+                    icon.classList.remove('hidden');
+                } else {
+                    opt.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-extrabold text-slate-300 hover:bg-white/10 transition-all";
+                    icon.classList.add('hidden');
+                }
+            });
+
+            // Auto-hide dropdown after selection
+            document.getElementById('brandDropdown').classList.add('hidden');
+        }
+
+        // Close/Dismiss Action
+        function dismissScreen() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.close();
+            }
+        }
+
+        // Auto-close Dropdown on Outside Click
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('brandDropdown');
+            const trigger = document.getElementById('brandTriggerBtn');
+            if (dropdown && !dropdown.contains(e.target) && e.target !== trigger) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Prevent Mobile Double-Tap Zoom
+        let lastTouchTime = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = new Date().getTime();
+            if (now - lastTouchTime <= 300) {
+                e.preventDefault();
+            }
+            lastTouchTime = now;
+        }, false);
+    </script>
+</body>
+</html>
